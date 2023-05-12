@@ -10,6 +10,7 @@ use \AllowDynamicProperties; // 동적 속성 쓸때 적어야 하는거
 class Controller {
     protected $model;
     private static $modelList = [];
+    private static $arrNeedAuth = ["product/list"];// 인증 필요한 페이지(로그인 안하면 못가게 만듦)
 
     // 생성자
     public function __construct($identityName, $action) {
@@ -17,6 +18,9 @@ class Controller {
         if(!isset($_SESSION)) {
             session_start();
         }
+
+        // 유저 로그인 및 권한 체크
+        $this->chkAuthorization();
 
         // model class 호출
         $this->model = $this->getModel($identityName);
@@ -42,7 +46,7 @@ class Controller {
     }
 
     // 파라미터를 확인해서 해당하는 view를 리턴하거나, redirect
-    public function getView($view) {
+    protected function getView($view) {
         // view를 체크
         if(strpos($view, _BASE_REDIRECT) === 0) {
             header($view);
@@ -52,8 +56,19 @@ class Controller {
     }
 
     // 동적 속성(DynamicProperty)를 셋팅하는 메소드
-    public function addDynamicProperty($key, $val) {
+    protected function addDynamicProperty($key, $val) {
         $this->$key = $val;
+    }
+
+    // 유저 권한 체크 메소드
+    protected function chkAuthorization() {
+        $urlPath = UrlUtil::getUrl();
+        foreach(self::$arrNeedAuth as $authPath) {
+            if(!isset($_SESSION[_STR_LOGIN_ID]) && strpos($urlPath, $authPath) === 0) {
+                header(_BASE_REDIRECT."/user/login");
+                exit();
+            }
+        }
     }
 }
 
