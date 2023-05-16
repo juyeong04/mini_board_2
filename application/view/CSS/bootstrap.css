@@ -1,0 +1,61 @@
+#logo {
+    font-weight: 800;
+    font-family: 'Sigmar', cursive;
+    letter-spacing: 3px;
+    text-shadow: -3px 0 purple, 0 1px purple, 1px 0 purple, 0 -1px purple;
+    color: #ffffff;
+}
+
+.nav-a1
+,.nav-a2
+,.nav-a3
+,.nav-a4 {
+    color: #6e6e6e!important;
+    font-size: 13px;
+}
+
+.nav-a2::before
+,.nav-a3::before
+,.nav-a4::before {
+    content: "|";
+    margin-right: 1rem;
+}
+
+.container {
+    padding: 16px 12px;
+}
+
+.bg-light {
+    background-color: #ffffff!important;
+}
+.shadow-sm { 
+    box-shadow: none!important;
+}
+.card {
+    border: none;
+}
+.card-img-top {
+    object-fit: cover;
+    margin-bottom: 16px;
+}
+
+.card-title {
+    font-weight: 900;
+}
+
+.btn {
+    font-weight: 900;
+}
+
+.btn_cart {
+    background-color: blueviolet;
+    border-color: blueviolet;
+}
+
+.btn_cart:hover
+,.btn_cart:focus {
+    background-color: #7124b9;
+    border-color: #7124b9;
+}
+
+

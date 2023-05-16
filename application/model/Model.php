@@ -1,4 +1,5 @@
 <?php
+//** DB 호출 역할 **/
 
 namespace application\model;
 
@@ -24,11 +25,23 @@ class Model {
             exit();
         }
     }
+    
     // DB connect 파기
-    protected function closeConn() {
+    public function close() {
         $this->conn = null;
     }
-
+    // commit
+    public function commit() {
+        $this->conn->commit();
+    }
+    // begintransaction
+    public function beginTransaction() {
+        $this->conn->beginTransaction();
+    }
+    //rollback
+    public function rollBack() {
+        $this->conn->rollback();
+    }
 }
 
 
