@@ -18,7 +18,7 @@
             <?php }?>
 
         <form action="/user/signup" method="post">
-            <input type="text" name="id" id="id" placeholder="아이디를 입력하세요">
+            <input type="text" name="id" id="id" placeholder="아이디를 입력하세요" value="<?php echo isset($_POST['id'])? $_POST['id'] : '' ?>">
             <button type="button" onclick="chkDuplicationId();">중복체크</button>
             <span id="errMsgId">
             <?php if(isset($this->arrError["id"])) { 
@@ -37,7 +37,7 @@
                     echo $this->arrError["pwChk"];
                 }?>
             </span>
-            <input type="text" name="name" id="name" placeholder="이름를 입력하세요">
+            <input type="text" name="name" id="name" placeholder="이름를 입력하세요" value="<?php echo isset($_POST['name'])? $_POST['name'] : '' ?>">
             <span>
             <?php if(isset($this->arrError["name"])) { 
                     echo $this->arrError["name"];

@@ -61,6 +61,22 @@ class UserModel extends Model{
             return false;
         }
     }
+
+    public function updateUser($arrUserInfo) {
+        $sql = " UPDATE user_info SET u_pw = :u_pw WHERE u_id = :u_id ";
+        $prepare = [
+            ":u_id" => $arrUserInfo["id"]
+            ,":u_pw" => $arrUserInfo["pw"]
+        ];
+        try {
+            $stmt = $this->conn->prepare($sql);
+            $result = $stmt->execute($prepare);
+            return $result;
+        }
+        catch (Exception $e) {
+            return false;
+        }
+    }
 }
 
 

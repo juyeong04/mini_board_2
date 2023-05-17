@@ -40,7 +40,7 @@ class UserController extends Controller {
         return "signup"._EXTENSION_PHP; // = signup.php
     }
     // public function signupPost() {
-    //     // TODO 유효성 체크!!
+    //       유효성 체크!!
     //     if($result_cnt === 1) {
     //         $this->model->beginTransaction();
     //         $result_cnt = $this->model->insertUser($_POST);
@@ -70,7 +70,13 @@ class UserController extends Controller {
         if(mb_strlen($arrPost["pw"]) < 8 || mb_strlen($arrPost["pw"]) > 20) {
             $arrChkErr["pw"] = "PW는 8~20글자로 적으세요";
         }
-        // TODO : PW 영문숫자특수문자 체크
+        // TODO : PW 영문숫자특수문자 체크(정규식)
+        $pattern = "/[^a-zA-Z0-9]/";
+        if(preg_match($pattern, $arrPost["id"]) !== 0) {
+            $arrChkErr["id"] = "id는 영어 소문자, 대문자, 숫자로만 적으세요";
+            $arrPost["id"] = "";
+
+        }
         
         // 비밀번화와 비밀번호 체크 확인
         if($arrPost["pw"] !== $arrPost["pwChk"]) {
@@ -99,26 +105,76 @@ class UserController extends Controller {
             return "signup"._EXTENSION_PHP;
         }
 
-    // ******* Transaction strat
-            $this->model->beginTransaction();
+        // ******* Transaction strat
+                $this->model->beginTransaction();
 
 
-        // user insert
-        if(!$this->model->insertUser($arrPost)) {
-            //예외처리 rollback
-            $this->model->rollBack();
-            echo "User Regist Error";
-            exit();
-        }
-        $this->model->commit(); // 정상처리 커밋
+            // User insert
+            if(!$this->model->insertUser($arrPost)) { // Usermodel에서 return값 false로 넘어와서 예외처리 가능!
+                //예외처리 rollback
+                $this->model->rollBack();
+                echo "User Regist Error";
+                exit();
+            }
+            $this->model->commit(); // 정상처리 커밋
 
-    // ******* Transaction end
+        // ******* Transaction end
 
         // 로그인페이지로 이동
         return _BASE_REDIRECT."/user/login";
     }
 
-    
-    
+    // User info update
+        public function myupdateGet() {
+            $sessionId = array("id" => $_SESSION[_STR_LOGIN_ID]);
+            $userInfo = $this->model->getUser($sessionId, false);// select값이 이중배열로 담겨있음 [0 => [u_id =>,u_pw => ,u_name => ] ]
+            $this->addDynamicProperty("selectUserInfo", $userInfo[0]);
+            // $selectUserInfo["id"] = $userInfo[0]["u_id"]; 삭제
+            // $selectUserInfo["name"] = $userInfo[0]["u_name"]; 삭제
+            // var_dump($sessionId, $userInfo[0], $this->selectUserInfo["u_id"]);
+            $this->model->close();
+            return "myupdate"._EXTENSION_PHP;
+        }
+        
+        public function myupdatePost() {
+            $arrPost = $_POST;
+            $arrChkErr = [];
+            $arrPost["id"] = $_SESSION[_STR_LOGIN_ID];
+
+            // if($arrPost["pw"] !== $arrPost["pwChk"]) {
+            //     $arrChkErr["pwChk"] = "입력하신 비밀번호가 일치하지 않습니다";
+            // }
+            if(mb_strlen($arrPost["pw"]) < 8 || mb_strlen($arrPost["pw"]) > 20) {
+                $arrChkErr["pw"] = "PW는 8~20글자로 적으세요";
+            }
+            if(!empty($arrChkErr)) {
+                 //에러 메세지 셋팅
+                // 1. get값 안에 다시 설정
+                // 2. db에서 다시 input hidden
+                $sessionId = array("id" => $_SESSION[_STR_LOGIN_ID]);
+                $userInfo = $this->model->getUser($sessionId, false);// select값이 이중배열로 담겨있음 [0 => [u_id => ,u_pw => ,u_name => ] ]
+                $this->addDynamicProperty("selectUserInfo", $userInfo);
+
+                $this->addDynamicProperty('arrError', $arrChkErr);
+                return "myupdate"._EXTENSION_PHP;
+            }
+
+            // ******* Transaction start
+                $this->model->beginTransaction();
+            // User update
+            if(!$this->model->updateUser($arrPost)) { // Usermodel에서 return값 false로 넘어와서 예외처리 가능!
+                //예외처리 rollback
+                $this->model->rollBack();
+                echo "User Info Update Error";
+                exit();
+            }
+            $this->model->commit(); // 정상처리 커밋
+
+            // ******* Transaction end
+
+            // 로그인페이지로 이동
+            return _BASE_REDIRECT."/user/login";
+
+        }
 }
 ?>
