@@ -3,9 +3,9 @@
 namespace application\model;
 
 class UserModel extends Model{
-    public function getUser($arrUserInfo, $pwFlg = true) {
+    public function getUser($arrUserInfo, $pwFlg = true, $delFlg = false) {
         // , $delFlg = false
-        $sql = " select * from user_info where u_id = :id"; // 따옴표 앞뒤로 띄워주기!!
+        $sql = " select * from user_info where u_id = :id "; // 따옴표 앞뒤로 띄워주기!!
 
         if($pwFlg) {
             $sql .= " and u_pw = :pw ";
@@ -19,9 +19,9 @@ class UserModel extends Model{
             $prepare[":pw"] = $arrUserInfo["pw"];
         }
         
-        // if($delFlg) {
-        //     $sql .= " and delFlg = '0'";
-        // }
+        if($delFlg) {
+            $sql .= " and del_flg = '0'";
+        }
 
         try {
             $stmt = $this->conn->prepare($sql);

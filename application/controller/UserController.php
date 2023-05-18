@@ -4,12 +4,26 @@ namespace application\controller;
 
 class UserController extends Controller {
     public function loginGet() {
+        
         return "login"._EXTENSION_PHP; // = login.php
     }
 
+    // TODO : 유효성 길이 검사
     public function loginPost() {
-        $result = $this->model->getUser($_POST);
+        $arrPost = $_POST;
+        $arrChkErr = [];
+        $result = $this->model->getUser($_POST, true, true);
         $this->model->close(); // usermodel에서 파기 안해주고 controller에서 db 파기
+
+        if(mb_strlen($arrPost["pw"]) < 8 || mb_strlen($arrPost["pw"]) > 20) {
+            $arrChkErr["pw"] = "PW는 8~20글자로 적으세요";
+        }
+
+    if(!empty($arrChkErr)) {
+        // 에러 메세지 셋팅
+        $this->addDynamicProperty('arrError', $arrChkErr);
+        return "login"._EXTENSION_PHP;
+    }
 
         // 유저 유무 체크
         if(count($result) === 0) {
@@ -69,7 +83,7 @@ class UserController extends Controller {
         if(mb_strlen($arrPost["pw"]) < 8 || mb_strlen($arrPost["pw"]) > 20) {
             $arrChkErr["pw"] = "PW는 8~20글자로 적으세요";
         }
-        // TODO : PW 영문숫자 체크(정규식)
+        // TODO : PW 빈칸 체크(정규식)
         $pattern = "/[^a-zA-Z0-9]/";
         if(preg_match($pattern, $arrPost["id"]) !== 0) {
             $arrChkErr["id"] = "id는 영어 소문자, 대문자, 숫자로만 적으세요";
@@ -82,6 +96,7 @@ class UserController extends Controller {
             $arrChkErr["pwChk"] = "입력하신 비밀번호가 일치하지 않습니다";
         }
 
+        // TODO : 이름 한글 글자수제한?????????
         //name 글자수 체크
         if(mb_strlen($arrPost["name"]) === 0 || mb_strlen($arrPost["name"]) > 30) {
             $arrChkErr["name"] = "이름은 30글자 이하로 적으세요";
@@ -95,7 +110,7 @@ class UserController extends Controller {
         }
         
         // id 중복 체크
-        $result = $this->model->getUser($arrPost,false);
+        $result = $this->model->getUser($arrPost, false, false);
         if(count($result) !== 0) {
             $errMsg = "입력하신 ID가 사용중입니다";
             $this->addDynamicProperty("errMsg", $errMsg); // key : errMsg / val : $errMsg
@@ -103,6 +118,12 @@ class UserController extends Controller {
             //회원가입 페이지로 리턴
             return "signup"._EXTENSION_PHP;
         }
+        // //에러떠서 사용못함..
+        // else if(count($result) == 0){
+        //     $errMsg = "사용할 수 있는 ID입니다";
+        //     $this->addDynamicProperty("errMsg", $errMsg);
+        //     return "signup"._EXTENSION_PHP;
+        // }
 
         // ******* Transaction strat
                 $this->model->beginTransaction();
@@ -192,6 +213,8 @@ class UserController extends Controller {
             exit();
         }
         $this->model->commit(); // 정상처리 커밋
+        session_unset();
+        session_destroy();
 
     // ******* Transaction end
 

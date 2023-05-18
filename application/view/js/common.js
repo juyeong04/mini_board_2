@@ -9,7 +9,8 @@ function chkDuplicationId() {
         const idspan = document.getElementById('errMsgId');
         if(apiData["flg"] === "1") {
             idspan.innerHTML = apiData["msg"]
-        } else { 
+        }
+        else { 
             idspan.innerHTML = "";
         }
     });

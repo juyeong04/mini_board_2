@@ -10,7 +10,7 @@ class ApiController extends Controller {
         // User model 호출 : Apicontroller에서는 ApiModel만 쓸수 있는데 Usermodel 쓰기 위해서 불러옴
         $this->model = $this->getModel("User");
 
-        $result = $this->model->getUser($arrGet,false);
+        $result = $this->model->getUser($arrGet,false, false);
 
         if(count($result) !== 0) {
             $arrData["flg"] = "1";
