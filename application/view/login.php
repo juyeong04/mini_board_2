@@ -25,7 +25,9 @@
     <div class="form-wrapper">
         <h1>Sign In</h1>
         <h3 style="color: red; text-align:center">
-        <?php echo isset($this->errMsg) ? $this->errMsg : ""; ?>
+        <?php
+        echo isset($this->errMsg) ? $this->errMsg : ""; 
+        ?>
         </h3>
         <!-- / root에서 시작한다는 뜻(htdocs), 안 적어주면 url이 뒤에 추가돼서 계속 불어남 -->
         <form action="/user/login" method="post">

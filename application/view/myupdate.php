@@ -9,9 +9,11 @@
 <body>
     <div class="container">
         <?php require_once("application/view/header.php")?>
+        <div><?php echo $this->selectUserInfo["u_id"]?></div>
+        <div><?php echo $this->selectUserInfo["u_name"]?></div>
         <form action="/user/myupdate" method="post">
-                <div><?php echo $this->selectUserInfo["u_id"]?></div>
-                <div><?php echo $this->selectUserInfo["u_name"]?></div>
+            <input type="hidden" name="u_id" id="id" value="<?php echo $this->selectUserInfo["u_id"]?>">
+            <input type="hidden" name="u_name" id="name" value="<?php echo $this->selectUserInfo["u_name"]?>">
                 <input type="password" name="pw" id="pw" placeholder="패스워드를 입력하세요">
                 <span>
                 <?php if(isset($this->arrError["pw"])) {
@@ -25,10 +27,11 @@
                     //}?>
                 </span> -->
                 <button type="submit">수정</button>
-                <button type-"button">탈퇴</button>
+                <button type="button" id="delUser" onclick="delUserInfo();">탈퇴</button>
             </form>
             <a href="/shop/main">취소</a>
     </div>
-    
+
+    <script src="/application/view/js/common.js"></script>
 </body>
 </html>

@@ -32,7 +32,8 @@
                 else {
                     ?>
                     <p><?php echo '안녕하세요 '.$_SESSION[_STR_LOGIN_ID].' 님' ?></p>
-                    <button id="logout" onclick="redirectLogout();">로그아웃</button>
+                    <a href="/user/logout" id="logout">로그아웃</a>
+                    <!-- Todo 마이페이지 수정에서 로그아웃 안됨!!!!!!!!! -->
                     <a class="me-3 py-2 text-dark text-decoration-none nav-a3" href="/user/myupdate">회원정보 수정</a>
             <?php
                 }
