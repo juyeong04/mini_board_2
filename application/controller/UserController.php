@@ -19,7 +19,6 @@ class UserController extends Controller {
             //로그인 페이지로 리턴
             return "login"._EXTENSION_PHP;
         }
-
         // session에 User Id 저장
         $_SESSION[_STR_LOGIN_ID] = $_POST["id"];
 
@@ -70,7 +69,7 @@ class UserController extends Controller {
         if(mb_strlen($arrPost["pw"]) < 8 || mb_strlen($arrPost["pw"]) > 20) {
             $arrChkErr["pw"] = "PW는 8~20글자로 적으세요";
         }
-        // TODO : PW 영문숫자특수문자 체크(정규식)
+        // TODO : PW 영문숫자 체크(정규식)
         $pattern = "/[^a-zA-Z0-9]/";
         if(preg_match($pattern, $arrPost["id"]) !== 0) {
             $arrChkErr["id"] = "id는 영어 소문자, 대문자, 숫자로만 적으세요";
@@ -139,7 +138,7 @@ class UserController extends Controller {
         public function myupdatePost() {
             $arrPost = $_POST;
             $arrChkErr = [];
-            $arrPost["id"] = $_SESSION[_STR_LOGIN_ID];
+            // $arrPost["id"] = $_SESSION[_STR_LOGIN_ID];
 
             // if($arrPost["pw"] !== $arrPost["pwChk"]) {
             //     $arrChkErr["pwChk"] = "입력하신 비밀번호가 일치하지 않습니다";
@@ -149,11 +148,11 @@ class UserController extends Controller {
             }
             if(!empty($arrChkErr)) {
                  //에러 메세지 셋팅
-                // 1. get값 안에 다시 설정
-                // 2. db에서 다시 input hidden
-                $sessionId = array("id" => $_SESSION[_STR_LOGIN_ID]);
-                $userInfo = $this->model->getUser($sessionId, false);// select값이 이중배열로 담겨있음 [0 => [u_id => ,u_pw => ,u_name => ] ]
-                $this->addDynamicProperty("selectUserInfo", $userInfo);
+                // 1. get값 안에 다시 설정 input hidden
+                // 2. db에서 다시 불러올때는 post값
+                // $sessionId = array("id" => $_SESSION[_STR_LOGIN_ID]);
+                // $userInfo = $this->model->getUser($sessionId, false);// select값이 이중배열로 담겨있음 [0 => [u_id => ,u_pw => ,u_name => ] ]
+                $this->addDynamicProperty("selectUserInfo", $arrPost);
 
                 $this->addDynamicProperty('arrError', $arrChkErr);
                 return "myupdate"._EXTENSION_PHP;
@@ -176,5 +175,29 @@ class UserController extends Controller {
             return _BASE_REDIRECT."/user/login";
 
         }
+
+    // 회원탈퇴
+    public function withdrawGet() {
+        $arrSessionId = array("id" => $_SESSION[_STR_LOGIN_ID]);
+
+        // ******* Transaction strat
+        $this->model->beginTransaction();
+
+
+        // User insert
+        if(!$this->model->updateDelUser($arrSessionId)) { 
+            //예외처리 rollback
+            $this->model->rollBack();
+            echo "User Regist Error";
+            exit();
+        }
+        $this->model->commit(); // 정상처리 커밋
+
+    // ******* Transaction end
+
+    // 메인으로 이동
+    return _BASE_REDIRECT."/shop/main";
+        
+    }
 }
 ?>
