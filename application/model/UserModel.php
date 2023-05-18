@@ -4,7 +4,8 @@ namespace application\model;
 
 class UserModel extends Model{
     public function getUser($arrUserInfo, $pwFlg = true) {
-        $sql = " select * from user_info where u_id = :id AND del_flg = 0 "; // 따옴표 앞뒤로 띄워주기!!
+        // , $delFlg = false
+        $sql = " select * from user_info where u_id = :id"; // 따옴표 앞뒤로 띄워주기!!
 
         if($pwFlg) {
             $sql .= " and u_pw = :pw ";
@@ -17,6 +18,10 @@ class UserModel extends Model{
         if($pwFlg) {
             $prepare[":pw"] = $arrUserInfo["pw"];
         }
+        
+        // if($delFlg) {
+        //     $sql .= " and delFlg = '0'";
+        // }
 
         try {
             $stmt = $this->conn->prepare($sql);
@@ -79,7 +84,7 @@ class UserModel extends Model{
     }
 
     public function updateDelUser($UserInfo) {
-        $sql = " UPDATE user_info SET del_flg = 1 WHERE u_id = :u_id ";
+        $sql = " UPDATE user_info SET del_flg = '1' WHERE u_id = :u_id ";
         $prepare = [
             "u_id" => $UserInfo["id"]
         ];
