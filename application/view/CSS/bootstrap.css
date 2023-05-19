@@ -9,7 +9,9 @@
 .nav-a1
 ,.nav-a2
 ,.nav-a3
-,.nav-a4 {
+,.nav-a4 
+,.nav-a5
+,.nav-a6{
     color: #6e6e6e!important;
     font-size: 13px;
 }
@@ -18,6 +20,13 @@
 ,.nav-a3::before
 ,.nav-a4::before {
     content: "|";
+    margin-right: 1rem;
+}
+
+.nav-a5
+,.nav-a6 {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
     margin-right: 1rem;
 }
 

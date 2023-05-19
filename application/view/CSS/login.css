@@ -128,3 +128,14 @@ form {
   background-color: #e2e1e1;
   transition: background 0.3s ease-in-out;
 }
+
+.login.form-item {
+  position: relative;
+}
+
+.login>div {
+  position: absolute;
+  top: 12px;
+  right: 10px;
+
+}

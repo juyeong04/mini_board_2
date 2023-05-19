@@ -26,3 +26,4 @@ function delUserInfo() {
     alert("탈퇴 되었습니다");
     location.href = "/user/withdraw";
 }
+

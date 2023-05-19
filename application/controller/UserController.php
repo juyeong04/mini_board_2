@@ -73,56 +73,69 @@ class UserController extends Controller {
         $arrPost = $_POST;
         $arrChkErr = [];
 
+        // TODO : post 글자 남아있는거 왜 안됨??????
         // 유효성 체크
 
         // ID 글자수 체크
         if((mb_strlen($arrPost["id"])) === 0 || mb_strlen($arrPost["id"]) > 12) {
-            $arrChkErr["id"] = "ID는 12글자 이하로 적으세요";
+            $arrChkErr["id"] = "ID는 '0~12글자 이하'로 적으세요";
         }
         // id 유효성 체크 : 영어( 소문자, 대문자, )숫자 만 가능
         $patternId = "/[^a-zA-Z0-9]/";
         if(preg_match($patternId, $arrPost["id"]) !== 0) {
-            $arrChkErr["id"] = "id는 영어 소문자, 대문자, 숫자로만 적으세요";
+            $arrChkErr["id"] = "id는 영어 '소문자, 대문자, 숫자'로만 적으세요";
             $arrPost["id"] = "";
-
         }
         
 
         // PW 글자수 체크
         if(mb_strlen($arrPost["pw"]) < 8 || mb_strlen($arrPost["pw"]) > 20) {
-            $arrChkErr["pw"] = "PW는 8~20글자로 적으세요";
+            $arrChkErr["pw"] = "PW는 '8~20글자'로 적으세요";
         }
-        // TODO : PW 빈칸 체크(정규식)
-        
+        // pw 유효성 체크
+        // $patternPw = "/[^a-zA-Z0-9]/";
+        // if(preg_match($patternPw, $arrPost["pw"]) !== 0) {
+        //     $arrChkErr["pw"] = "pw는 영어 '소문자, 대문자, 숫자'로만 적으세요";
+        // }
+
         // 비밀번화와 비밀번호 체크 확인
         if($arrPost["pw"] !== $arrPost["pwChk"]) {
             $arrChkErr["pwChk"] = "입력하신 비밀번호가 일치하지 않습니다";
         }
 
-        // TODO : 이름 한글 글자수제한?????????
-        // name 한글만 가능 체크
-        $patternName = "";
-        if(preg_match($patternName, $arrPost["name"]) !== 0) {
+        
 
-        }
+        // TODO : 이름 한글
+        //name 한글만 가능 체크
+        // $patternName = "/[^[가-힣]+$]/";
+        // if(preg_match($patternName, $arrPost["name"]) !== 0) {
+        //     $arrChkErr["name"] = "이름은 '한글'만 적으세요";
+        //     $arrPost["name"] = "";
+        // }
 
         //name 글자수 체크
         if(mb_strlen($arrPost["name"]) === 0 || mb_strlen($arrPost["name"]) > 30) {
-            $arrChkErr["name"] = "이름은 30글자 이하로 적으세요";
+            $arrChkErr["name"] = "이름은 '0~30글자 이하'로 적으세요";
         }
 
         // 유효성체크 에러일 경우
         if(!empty($arrChkErr)) {
+            $arrPost["pw"] = "";
+            $arrPost["pwChk"] = "";
             // 에러 메세지 셋팅
-            $this->addDynamicProperty('arrError', $arrChkErr);
+            $this->addDynamicProperty("arrError", $arrChkErr);
+            $this->addDynamicProperty("inputData", $arrPost);
             return "signup"._EXTENSION_PHP;
         }
         
         // id 중복 체크
         $result = $this->model->getUser($arrPost, false, false);
         if(count($result) !== 0) {
+            $arrPost["pw"] = "";
+            $arrPost["pwChk"] = "";
             $errMsg = "입력하신 ID가 사용중입니다";
             $this->addDynamicProperty("errMsg", $errMsg); // key : errMsg / val : $errMsg
+            $this->addDynamicProperty("inputData", $arrPost);
 
             //회원가입 페이지로 리턴
             return "signup"._EXTENSION_PHP;
@@ -150,7 +163,7 @@ class UserController extends Controller {
     // User info update
         public function myupdateGet() {
             $sessionId = array("id" => $_SESSION[_STR_LOGIN_ID]);
-            $userInfo = $this->model->getUser($sessionId, false);// select값이 이중배열로 담겨있음 [0 => [u_id =>,u_pw => ,u_name => ] ]
+            $userInfo = $this->model->getUser($sessionId, false, false);// select값이 이중배열로 담겨있음 [0 => [u_id =>,u_pw => ,u_name => ] ]
             $this->addDynamicProperty("selectUserInfo", $userInfo[0]);
             // $selectUserInfo["id"] = $userInfo[0]["u_id"]; 삭제
             // $selectUserInfo["name"] = $userInfo[0]["u_name"]; 삭제
@@ -162,11 +175,7 @@ class UserController extends Controller {
         public function myupdatePost() {
             $arrPost = $_POST;
             $arrChkErr = [];
-            // $arrPost["id"] = $_SESSION[_STR_LOGIN_ID];
 
-            // if($arrPost["pw"] !== $arrPost["pwChk"]) {
-            //     $arrChkErr["pwChk"] = "입력하신 비밀번호가 일치하지 않습니다";
-            // }
             if(mb_strlen($arrPost["pw"]) < 8 || mb_strlen($arrPost["pw"]) > 20) {
                 $arrChkErr["pw"] = "PW는 8~20글자로 적으세요";
             }
@@ -177,7 +186,6 @@ class UserController extends Controller {
                 // $sessionId = array("id" => $_SESSION[_STR_LOGIN_ID]);
                 // $userInfo = $this->model->getUser($sessionId, false);// select값이 이중배열로 담겨있음 [0 => [u_id => ,u_pw => ,u_name => ] ]
                 $this->addDynamicProperty("selectUserInfo", $arrPost);
-
                 $this->addDynamicProperty('arrError', $arrChkErr);
                 return "myupdate"._EXTENSION_PHP;
             }
