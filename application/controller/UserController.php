@@ -72,24 +72,27 @@ class UserController extends Controller {
     public function signupPost() {
         $arrPost = $_POST;
         $arrChkErr = [];
+
         // 유효성 체크
+
         // ID 글자수 체크
         if((mb_strlen($arrPost["id"])) === 0 || mb_strlen($arrPost["id"]) > 12) {
             $arrChkErr["id"] = "ID는 12글자 이하로 적으세요";
         }
-        // TODO : ID 영문, 숫자 체크
+        // id 유효성 체크 : 영어( 소문자, 대문자, )숫자 만 가능
+        $patternId = "/[^a-zA-Z0-9]/";
+        if(preg_match($patternId, $arrPost["id"]) !== 0) {
+            $arrChkErr["id"] = "id는 영어 소문자, 대문자, 숫자로만 적으세요";
+            $arrPost["id"] = "";
+
+        }
+        
 
         // PW 글자수 체크
         if(mb_strlen($arrPost["pw"]) < 8 || mb_strlen($arrPost["pw"]) > 20) {
             $arrChkErr["pw"] = "PW는 8~20글자로 적으세요";
         }
         // TODO : PW 빈칸 체크(정규식)
-        $pattern = "/[^a-zA-Z0-9]/";
-        if(preg_match($pattern, $arrPost["id"]) !== 0) {
-            $arrChkErr["id"] = "id는 영어 소문자, 대문자, 숫자로만 적으세요";
-            $arrPost["id"] = "";
-
-        }
         
         // 비밀번화와 비밀번호 체크 확인
         if($arrPost["pw"] !== $arrPost["pwChk"]) {
@@ -97,6 +100,12 @@ class UserController extends Controller {
         }
 
         // TODO : 이름 한글 글자수제한?????????
+        // name 한글만 가능 체크
+        $patternName = "";
+        if(preg_match($patternName, $arrPost["name"]) !== 0) {
+
+        }
+
         //name 글자수 체크
         if(mb_strlen($arrPost["name"]) === 0 || mb_strlen($arrPost["name"]) > 30) {
             $arrChkErr["name"] = "이름은 30글자 이하로 적으세요";
@@ -118,12 +127,6 @@ class UserController extends Controller {
             //회원가입 페이지로 리턴
             return "signup"._EXTENSION_PHP;
         }
-        // //에러떠서 사용못함..
-        // else if(count($result) == 0){
-        //     $errMsg = "사용할 수 있는 ID입니다";
-        //     $this->addDynamicProperty("errMsg", $errMsg);
-        //     return "signup"._EXTENSION_PHP;
-        // }
 
         // ******* Transaction strat
                 $this->model->beginTransaction();
